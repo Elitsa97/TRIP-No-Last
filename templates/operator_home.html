@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Оператор – Моята сесия</title>
+  <style>
+    :root{
+      --bg:#d0daf8; --card:#a5a7ad; --muted:#d8d2d2; --text:white; --accent:#3B82F6;
+      --danger:#EF4444; --success:#10B981; --border:#1F2937; --radius:14px;
+    }
+    html,body{background:var(--bg);color:var(--text);font:16px/1.45 system-ui,Segoe UI,Roboto,Arial;}
+    a{color:var(--accent);text-decoration:none}
+    header{
+      padding:14px 12px;border-bottom:1px solid var(--border);
+      position:sticky;top:0;z-index:10;background:#272c36
+    }
+    header .row{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
+    header h1{margin:0;font-size:18px}
+    .pill{background:#0f172a;padding:4px 10px;border-radius:999px;color:#D1D5DB}
+    .muted{color:var(--muted)}
+    nav a{margin-left:12px}
+
+    main{max-width:900px;margin:18px auto;padding:0 12px;display:grid;gap:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+
+    /* Горе – единствен контрол */
+    .form-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+    label{display:block;margin-bottom:6px;color:#cbd5e1;font-size:14px}
+    input[type=text]{
+      width:100%;padding:12px 14px;border-radius:12px;border:1px solid #374151;background:#242b3b;color:#e5e7eb;
+      font-size:16px;outline:none;transition:.15s border-color;
+    }
+    input[type=text]:focus{border-color:var(--accent)}
+    .btn{padding:12px 14px;border-radius:12px;border:1px solid #e7eaee;background:#252d3b;color:#e5e7eb;cursor:pointer;font-size:16px}
+    .btn.start{background:var(--success);border-color:transparent}
+    .btn.stop{background:var(--danger);border-color:transparent}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .bigline{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .timer{font-weight:700}
+
+    /* Долу – активни TRIP-ове */
+    .list{display:grid;gap:10px}
+    .order-row{display:grid;gap:8px;border:1px dashed #ebecee;border-radius:12px;padding:12px;background:#2d2e2e}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .row .muted{font-size:14px}
+
+    @media (max-width: 700px){
+      .form-row{grid-template-columns:1fr 1fr}
+      .btn{width:100%}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="row">
+    <h1>Оператор – Моята сесия</h1>
+    <div class="muted">
+      Влязъл: <span class="pill">{{ user.username }}</span> (роля: <strong>{{ user.role }}</strong>)
+      <nav>
+        <a href="/logout">Изход</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Горе: само добавяне на TRIP с дефолт TRIP- -->
+  <section class="card">
+    <div class="form-row">
+      <div>
+        <label for="new-order">TRIP №</label>
+        <input id="new-order" type="text" placeholder="TRIP-" value="TRIP-" autocomplete="off"  inputmode="latin-prose" />
+      </div>
+      <div>
+        <button id="btnStart" class="btn start" title="Старт на нов TRIP">Старт</button>
+      </div>
+    </div>
+    <div class="bigline">
+      <!-- <span class="muted" id="statusText">Няма активна сесия.</span> -->
+      <!-- <span class="timer" id="bigTimer">0 мин</span> -->
+    </div>
+  </section>
+
+  <!-- Долу: активните TRIP-ове (без бутон „Добави ред“) -->
+  <section class="card">
+    <h2 style="margin:0 0 8px;">Активни TRIP-ове</h2>
+    <div id="ordersList" class="list"></div>
+    <p class="muted" id="emptyList" style="display:none">Няма активни сесии.</p>
+  </section>
+</main>
+
+<!-- Външен JS за оператор -->
+<script src="{{ url_for('static', filename='operator_home.js') }}" defer></script>
+</body>
+</html>

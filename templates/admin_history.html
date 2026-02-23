@@ -1,0 +1,223 @@
+<!-- <!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Админ – История на всички</title>
+  <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+  <style>
+    table td, table th { white-space: nowrap; }
+    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .order-id { width: 220px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>История на всички TRIP сесии</h1>
+    <p class="muted">
+      Влязъл: <span class="pill">{{ user.username }}</span> (роля: <strong>admin</strong>)
+      | <a href="/admin/users" target="_blank">Админ: Потребители</a>
+      | <a href="/logout">Изход</a>
+    </p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Филтри</h2>
+      <div class="row">
+        <input id="f_username" type="text" placeholder="потребител (по избор)" />
+        <input id="f_order" type="text" class="order-id" placeholder="TRIP-номер (по избор)" />
+        <input id="f_from" type="date" />
+        <input id="f_to" type="date" />
+        <button id="btnLoad">Зареди</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Резултати</h2>
+      <table id="histTable">
+        <thead>
+          <tr>
+            <th>Потребител</th>
+            <th>TRIP №</th>
+            <th>Ден</th>
+            <th>Час (начало → край)</th>
+            <th>Минути</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    async function loadHistory() {
+      const u = document.getElementById('f_username').value.trim();
+      const o = document.getElementById('f_order').value.trim();
+      const f = document.getElementById('f_from').value;
+      const t = document.getElementById('f_to').value;
+
+      const params = new URLSearchParams();
+      if (u) params.set('username', u);
+      if (o) params.set('order_no', o);
+      if (f) params.set('from', f);
+      if (t) params.set('to', t);
+
+      const res = await fetch('/admin/history_data?' + params.toString());
+      const data = await res.json();
+      const tbody = document.querySelector('#histTable tbody');
+      tbody.innerHTML = '';
+
+      if (!data.ok) {
+        tbody.innerHTML = '<tr><td colspan="5">Грешка при зареждане</td></tr>';
+        return;
+      }
+
+      if (!data.results.length) {
+        tbody.innerHTML = '<tr><td colspan="5">Няма данни.</td></tr>';
+        return;
+      }
+
+      data.results.forEach(r => {
+        const tr = document.createElement('tr');
+        const timeRange = (r.start_time || '-') + ' → ' + (r.end_time || '(активна)');
+        tr.innerHTML = `
+          <td>${r.username}</td>
+          <td>${r.order_no}</td>
+          <td>${r.start_day || '-'}</td>
+          <td>${timeRange}</td>
+          <td>${r.minutes ?? ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('btnLoad').addEventListener('click', loadHistory);
+    document.addEventListener('DOMContentLoaded', loadHistory);
+  </script>
+</body>
+</html>
+`` -->
+
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>История – Сесии</title>
+  <style>
+    :root{
+      --bg:#d0daf8; --card:#a5a7ad; --muted:#e5e5ec; --text:white; --accent:#3B82F6;
+      --danger:#EF4444; --border:#1F2937; --radius:12px;
+    }
+    html,body{background:var(--bg);color:var(--text);font:16px/1.4 system-ui,Segoe UI,Roboto,Arial;}
+    a{color:var(--accent);text-decoration:none}
+    header{padding:14px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;background:#0c1322}
+    header .row{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
+    header h1{margin:0;font-size:18px}
+    header .who{font-size:14px;color:var(--muted)}
+    .pill{background:#0f172a;padding:4px 10px;border-radius:999px;color:#D1D5DB}
+    nav a{margin-left:12px}
+
+    main{max-width:1100px;margin:18px auto;padding:0 12px;display:grid;gap:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+    .card h2{margin:0 0 10px 0;font-size:18px}
+    .muted{color:var(--muted)}
+
+    /* Филтри – етикети отгоре, компактни на телефон */
+    form.filters{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+    form.filters .field{display:flex;flex-direction:column;gap:6px}
+    form.filters label{font-size:13px;color:#cbd5e1}
+    form.filters input{padding:10px 12px;border-radius:10px;border:1px solid #374151;background:#0f172a;color:#e5e7eb}
+    form.filters .actions{display:flex;gap:8px;align-items:end}
+    .btn{padding:10px 12px;border-radius:10px;border:1px solid #1f2937;background:#0b1220;color:#e5e7eb;cursor:pointer}
+    .btn.primary{background:var(--accent);border-color:transparent}
+    .btn.ghost{background:#0f172a}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    @media (max-width: 960px){
+      form.filters{grid-template-columns:repeat(3,1fr)}
+    }
+    @media (max-width: 600px){
+      form.filters{grid-template-columns:1fr}
+      .actions{justify-content:flex-start}
+    }
+
+    /* Таблица */
+    .table-wrap{overflow:auto;border-radius:var(--radius);border:1px solid var(--border)}
+    table{width:100%;border-collapse:collapse;min-width:820px}
+    th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+    th{color:#94a3b8;background:#0d1423;position:sticky;top:0}
+    .no-data{padding:10px;color:var(--muted)}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="row">
+    <h1>История на сесиите</h1>
+    <div class="who">
+      Влязъл: <span class="pill">{{ user.username }}</span> (роля: <strong>{{ user.role }}</strong>)
+      <nav>
+        <a href="/admin/users">Потребители</a>
+        <a href="/logout">Изход</a>
+        <a href="/">Начало</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Филтри</h2>
+    <form class="filters" id="filters" onsubmit="return false;">
+      <div class="field">
+        <label for="f-order">TRIP №</label>
+        <input id="f-order" type="text" placeholder="TRIP-123">
+      </div>
+      <div class="field">
+        <label for="f-username">Потребител</label>
+        <input id="f-username" type="text" placeholder="operator_ivan">
+      </div>
+      <div class="field">
+        <label for="f-from">От (дата)</label>
+        <input id="f-from" type="date">
+      </div>
+      <div class="field">
+        <label for="f-to">До (дата)</label>
+        <input id="f-to" type="date">
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="btn-apply">Приложи</button>
+        <button class="btn ghost" id="btn-clear">Изчисти</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Резултати</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Потребител</th>
+            <th>TRIP №</th>
+            <th>Хъб</th>
+            <th>Старт (дата)</th>
+            <th>Старт (час)</th>
+            <th>Край (дата)</th>
+            <th>Край (час)</th>
+            <th>Минути</th>
+          </tr>
+        </thead>
+        <tbody id="history-body">
+          <tr><td class="no-data" colspan="8">Няма данни. Приложете филтър или оставете празно за последните 500.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<!-- История JS -->
+<script defer src="{{ url_for('static', filename='admin_history.js') }}"></script>
+</body>
+</html>

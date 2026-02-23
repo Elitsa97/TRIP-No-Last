@@ -1,0 +1,132 @@
+<!-- <!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Отчитане на време за TRIP</title>
+  <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+  <style>
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+    .order-row { border: 1px solid #e0e0e0; padding: 10px; border-radius: 6px; }
+    .muted { color: #666; }
+    .timer { font-weight: bold; }
+    .order-id { width: 220px; }
+    .pill { background:#f3f4f6; padding:2px 8px; border-radius:12px; }
+    header a { text-decoration:none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Отчитане на време за TRIP</h1>
+    <p class="muted">
+      Влязъл: <span class="pill">{{ user.username }}</span>
+      {% if user.role == 'admin' %} | <a href="/admin/users" target="_blank">Админ: Потребители</a>{% endif %}
+      | <a href="/logout">Изход</a>
+    </p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Моя TRIP</h2>
+      <div class="row">
+        <button id="btnAddOrder">Добави TRIP</button>
+      </div> -->
+
+      <!-- Редове за поръчки (всеки със собствен Старт/Край) -->
+      <!-- <div id="ordersList"></div>
+
+      <p class="muted">
+        ✔ Старт/Край работят само за конкретния ред (TRIP).<br>
+        ✔ Времето продължава да се брои, докато не натиснеш „Край“, дори ако табът или компютърът заспят.
+      </p>
+    </section>
+
+    <section>
+        {% if user.role == 'admin' %}
+      <h2>Справки</h2>
+      <div class="row">
+        <input id="reportOrder" type="text" class="order-id" placeholder="TRIP за справка" />
+        <button id="btnReportMine">Минути (моите)</button>
+        <button id="btnReportAll">Минути (всички потребители)</button>
+        <button id="btnHistoryMine" class="secondary">История (моите)</button>
+        {% endif %}
+      </div>
+      <pre id="reportBox"></pre>
+    </section>
+  </main>
+
+  <script src="/static/script.js"></script>
+</body>
+</html> -->
+
+
+
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Отчитане на време за TRIP</title>
+  <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+  <style>
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+    .order-row { border: 1px solid #e0e0e0; padding: 10px; border-radius: 6px; }
+    .muted { color: #666; }
+    .timer { font-weight: bold; }
+    .order-id { width: 220px; }
+    .pill { background:#f3f4f6; padding:2px 8px; border-radius:12px; }
+    header a { text-decoration:none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Отчитане на време за TRIP</h1>
+    <p class="muted">
+      Влязъл: <span class="pill">{{ user.username }}</span>
+      {% if user.role == 'admin' %} | 
+      <a href="/admin/users" target="_blank">Админ: Потребители</a>
+      | <a href="/admin/history" target="_blank">Админ: История</a>
+      {% endif %}
+      | <a href="/logout">Изход</a>
+    </p>
+  </header>
+
+  <main>
+
+    <!-- 1) Старт на нов TRIP -->
+    <section>
+      <!-- <h2>Моя TRIP</h2> -->
+      <div class="row">
+        <button id="btnAddOrder">Добави TRIP</button>
+      </div>
+
+      <!-- Редове за поръчки (всеки със собствен Старт/Край) -->
+      <div id="ordersList"></div>
+    </section>
+
+    <!-- 2) Активни TRIP сесии
+    <section>
+      <h2>Активни сесии</h2>
+      <div id="activeList"></div>
+      <p class="muted">
+        Всяка активна поръчка има таймер и бутон „Край“.  
+        Времето тече дори ако табът или компютърът заспят.
+      </p>
+    </section> -->
+
+    <!-- 3) Справки (само за admin) -->
+    <!-- {% if user.role == 'admin' %}
+    <section>
+      <h2>Справки</h2>
+      <div class="row">
+        <input id="reportOrder" type="text" class="order-id" placeholder="TRIP номер за справка" />
+        <button id="btnReportAll">Минути (всички потребители)</button>
+      </div>
+      <pre id="reportBox"></pre>
+    </section>
+    {% endif %} -->
+  </main>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>

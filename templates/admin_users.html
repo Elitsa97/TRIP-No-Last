@@ -1,0 +1,222 @@
+
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Админ – Потребители</title>
+
+  <style>
+    :root{
+      --bg:#d0daf8; --card:#a5a7ad; --muted:#cdcdd6; --text:white; --accent:#3B82F6;
+      --accent-2:#10B981; --danger:#EF4444; --warning:#F59E0B; --border:#1F2937; --radius:12px;
+    }
+    html,body{background:var(--bg);color:var(--text);font:16px/1.4 system-ui,Segoe UI,Roboto,Arial;}
+    a{color:var(--accent);text-decoration:none}
+    header{padding:14px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;background:#272c36}
+    header .row{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
+    header h1{margin:0;font-size:18px}
+    header .who{font-size:14px;color:var(--muted)}
+    .pill{background:#0f172a;padding:4px 10px;border-radius:999px;color:#D1D5DB}
+    nav a{margin-left:12px}
+
+    main{max-width:1100px;margin:18px auto;padding:0 12px;display:grid;gap:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+    .card h2{margin:0 0 10px 0;font-size:18px}
+    .muted{color:var(--muted)}
+
+    /* Формата – етикети отгоре */
+    form.stacked label{display:block;margin:10px 0 4px;font-size:14px;color:#cbd5e1}
+    form.stacked input, form.stacked select{
+      width:100%;padding:10px 3px;border-radius:10px;border:1px solid #3f4044;background:#252d3b;color:#e5e7eb;
+      outline:none;transition:.15s border-color;
+    }
+    form.stacked input:focus, form.stacked select:focus{border-color:var(--accent)}
+    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .btn{padding:8px 12px;border-radius:10px;border:1px solid #3a3f47;background:#0b1220;color:#e5e7eb;cursor:pointer}
+    .btn.primary{background:var(--accent);border-color:transparent}
+    .btn.success{background:var(--accent-2);border-color:transparent}
+    .btn.warn{background:var(--warning);border-color:transparent;color:#111}
+    .btn.danger{background:var(--danger);border-color:transparent}
+    .btn.ghost{background:#0f172a}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+
+    /* Таблица за десктоп */
+    .table-wrap{overflow:auto;border-radius:var(--radius);border:1px solid var(--border)}
+    table{width:100%;border-collapse:collapse;min-width:720px}
+    th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+    th{color:#94a3b8;background:#1e315c;position:sticky;top:0}
+    td.actions{white-space:nowrap}
+
+    /* Карти за мобилен */
+    @media (max-width: 760px){
+      .table-wrap{display:none}
+      .cards{display:grid;gap:12px}
+      .card-row{border:1px solid var(--border);border-radius:12px;padding:12px;background:#0e1626;display:grid;gap:6px}
+      .kv{display:flex;justify-content:space-between;gap:10px;font-size:14px}
+      .kv .k{color:#9ca3af}
+      .kv .v{color:#e5e7eb;word-break:break-word;text-align:right}
+      .card-row .row-actions{margin-top:6px}
+    }
+
+    /* Диалози */
+    dialog{
+      border:1px solid var(--border);border-radius:12px;background:#0e1626;color:#e5e7eb;max-width:420px;width:calc(100% - 24px);
+      padding:16px;
+    }
+    dialog::backdrop{background:rgba(3,7,18,.55)}
+    dialog .dlg-row{margin-bottom:10px}
+    dialog label{display:block;margin-bottom:6px;color:#cbd5e1}
+    dialog input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #374151;background:#0f172a;color:#e5e7eb}
+    dialog .dlg-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="row">
+    <h1>Управление на потребители</h1>
+    <div class="who">
+      Влязъл: <span class="pill">{{ user.username }}</span> (роля: <strong>{{ user.role }}</strong>)
+      <nav>
+        <a href="/admin/history">История</a>
+        <a href="/logout">Изход</a>
+        <a href="/">Начало</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Създаване на нов потребител -->
+  <section class="card">
+    <h2>Създай нов потребител</h2>
+    {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
+
+    <form class="stacked" action="/admin/users" method="post" novalidate>
+      <label for="u-username">Потребителско име</label>
+      <input id="u-username" type="text" name="username" required placeholder="например: operator_ivan">
+
+      <label for="u-password">Парола</label>
+      <input id="u-password" type="password" name="password" required placeholder="Pass">
+
+      {% if user.role == 'superadmin' %}
+        <label for="u-role">Роля</label>
+        <select id="u-role" name="role">
+          <option value="user" selected>user</option>
+          <option value="admin">admin</option>
+        </select>
+      {% else %}
+        <input type="hidden" name="role" value="user">
+        <p class="muted">Ще бъде създаден оператор (<strong>user</strong>) към админ <strong>{{ user.username }}</strong>.</p>
+      {% endif %}
+
+      <div class="row-actions">
+        <button class="btn primary" type="submit">Създай</button>
+        <button class="btn ghost" type="reset">Изчисти</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Списък с потребители -->
+  <section class="card">
+    <h2>Списък</h2>
+
+    <!-- Таблица за десктоп -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Потребител</th>
+            <th>Роля</th>
+            {% if user.role == 'superadmin' %}
+              <th>Собственик (admin)</th>
+            {% endif %}
+            <th>Създаден</th>
+            {% if user.role == 'superadmin' %}<th>Действия</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr data-username="{{ u['username'] }}">
+            <td>{{ u['username'] }}</td>
+            <td>{{ u['role'] }}</td>
+            {% if user.role == 'superadmin' %}
+              <td>{{ u['owner_admin_username'] or '' }}</td>
+            {% endif %}
+            <td>
+              {% if u['created_at_fmt'] %}{{ u['created_at_fmt'] }}
+              {% elif u['created_at'] %}{{ u['created_at'] }}
+              {% else %}-{% endif %}
+            </td>
+
+            {% if user.role == 'superadmin' %}
+            <td class="actions">
+              <button class="btn ghost act-view-pwd"      data-username="{{ u['username'] }}">Покажи</button>
+              <button class="btn warn  act-rename"        data-username="{{ u['username'] }}">Преименувай</button>
+              <button class="btn        act-reset-pwd"    data-username="{{ u['username'] }}">Смяна парола</button>
+              <button class="btn        act-delete-account" data-username="{{ u['username'] }}" data-with-history="0">Изтрий (само акаунт)</button>
+              <button class="btn danger act-delete-all"   data-username="{{ u['username'] }}" data-with-history="1">Изтрий (история)</button>
+            </td>
+            {% endif %}
+            <!-- {% if user.role == 'superadmin' %}
+            <td class="actions">
+              <button class="btn warn act-rename"        data-username="{{ u['username'] }}">Преименувай</button>
+              <button class="btn act-reset-pwd"          data-username="{{ u['username'] }}">Смяна парола</button>
+              <button class="btn warning" onclick="AdminUsers.resetPwd('{{ u.username }}')">🔁 Смени</button>
+              <button class="btn act-delete-account"     data-username="{{ u['username'] }}" data-with-history="0">Изтрий (само акаунт)</button>
+              <button class="btn danger act-delete-all"  data-username="{{ u['username'] }}" data-with-history="1">Изтрий (история)</button>
+              <button class="btn ghost" onclick="AdminUsers.viewPwd('{{ u.username }}')">👁 Покажи</button>
+
+            </td>
+            {% endif %} -->
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<!-- Диалог: Преименуване -->
+<dialog id="dlg-rename">
+  <form method="dialog" class="stacked" id="form-rename" onsubmit="return false;">
+    <h3 style="margin:0 0 10px;">Преименувай потребител</h3>
+    <div class="dlg-row">
+      <label>Текущо име</label>
+      <input id="old-username" type="text" readonly>
+    </div>
+    <div class="dlg-row">
+      <label>Ново име</label>
+      <input id="new-username" type="text" required placeholder="ново_име">
+    </div>
+    <div class="dlg-actions">
+      <button class="btn ghost" onclick="AdminUsers.closeDialog('dlg-rename')">Отказ</button>
+      <button class="btn success" onclick="AdminUsers.submitRename()">Запази</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Диалог: Смяна парола -->
+<dialog id="dlg-pwd">
+  <form method="dialog" class="stacked" id="form-pwd" onsubmit="return false;">
+    <h3 style="margin:0 0 10px;">Смяна на парола</h3>
+    <div class="dlg-row">
+      <label>Потребител</label>
+      <input id="pwd-username" type="text" readonly>
+    </div>
+    <div class="dlg-row">
+      <label>Нова парола</label>
+      <input id="pwd-newpass" type="password" required placeholder="нова парола">
+    </div>
+    <div class="dlg-actions">
+      <button class="btn ghost" onclick="AdminUsers.closeDialog('dlg-pwd')">Отказ</button>
+      <button class="btn success" onclick="AdminUsers.submitPwd()">Запази</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Външен JS файл -->
+<script src="{{ url_for('static', filename='admin_users.js') }}" defer></script>
+</body>
+</html>

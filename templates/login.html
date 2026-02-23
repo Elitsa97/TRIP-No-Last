@@ -1,0 +1,128 @@
+<!-- <!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+</head>
+<body>
+  <main>
+    <section>
+      {% if error %}
+        <p style="color:#b00020;"><strong>{{ error }}</strong></p>
+      {% endif %}
+
+      <form action="/login" method="post">
+        <label>Потребителско име
+          <input type="text" name="username" placeholder="username" required />
+        </label>
+        <label>Парола
+          <input type="password" name="password" required />
+        </label>
+        <button type="submit">Вход</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html> -->
+
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+
+  <style>
+    /* 1) Общ мек фон за цялата страница */
+    body {
+      background: #f6f8fb; /* много светъл, мек */
+      min-height: 100vh;
+    }
+
+    /* 2) Нулираме „външния панел“, който идва от mvp.css */
+    main, section {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+      padding: 0;
+    }
+
+    /* Центриране по екрана */
+    main {
+      display: grid;
+      place-items: center;
+      padding: 6vh 16px;
+    }
+
+    /* 3) Истинският логин панел */
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      padding: 28px 28px;
+      border-radius: 14px;
+      border: none;
+
+      /* светлосив + леко прозрачен */
+      background: rgba(217, 218, 219, 0.85); /* #f5f7fa с прозрачност */
+
+      /* меко, разлято осветяване (без агресивен контур) */
+      box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.10),
+        0 2px 6px rgba(0, 0, 0, 0.06);
+
+      /* по желание – леко стъклено усещане */
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    /* Форм контролите – меко и свежо */
+    .login-card label { display: block; margin-bottom: 1rem; }
+    .login-card input[type="text"],
+    .login-card input[type="password"] {
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.85);
+    }
+    .login-card button[type="submit"] {
+      border-radius: 10px;
+      padding: 10px 16px;
+    }
+
+    /* Съобщение за грешка – чисто и четливо */
+    .error {
+      color: #b00020;
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    /* Малко повече въздух на мобилни */
+    @media (max-width: 480px) {
+      .login-card { padding: 22px 20px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="login-card">
+      {% if error %}
+        <p class="error">{{ error }}</p>
+      {% endif %}
+
+      <form action="/login" method="post">
+        <label>Потребителско име
+          <input type="text" name="username" required />
+        </label>
+
+        <label>Парола
+          <input type="password" name="password" required />
+        </label>
+
+        <button type="submit">Вход</button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
