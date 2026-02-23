@@ -14,7 +14,11 @@ from get_conn import get_pg_conn
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', '')
+
+if not app.config['SECRET_KEY']:
+    raise RuntimeError("SECRET_KEY not set")
+
 ENC_KEY = os.environ.get("PG_ENC_KEY", "CHANGE_ME")
 
 
